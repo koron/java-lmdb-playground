@@ -1,0 +1,34 @@
+// vim:set sts=4 sw=4 tw=0 et ft=groovy:
+
+apply plugin: 'java'
+apply plugin: 'application'
+
+version = '0.1'
+mainClassName = 'net.kaoriya.lmdb_playground.Main'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.deephacks.lmdbjni:lmdbjni:0.3.2'
+    compile 'org.deephacks.lmdbjni:lmdbjni-win64:0.3.2'
+
+    testCompile 'junit:junit:4.11'
+}
+
+run {
+    if (project.hasProperty('args')) {
+        args project.args.split('\\s+')
+    }
+    if (project.hasProperty('jvmArgs')) {
+        jvmArgs project.jvmArgs.split('\\s+')
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////
+// gradle wrapper task
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
+}

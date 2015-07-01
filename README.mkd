@@ -1,0 +1,6 @@
+# Lmdb playground
+
+## lmdb JNI
+
+*   Github: https://github.com/deephacks/lmdbjni
+*   Javadoc: http://deephacks.org/lmdbjni/apidocs/index.html

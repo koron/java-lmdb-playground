@@ -1,9 +1,13 @@
 package net.kaoriya.lmdb_playground;
 
+import org.fusesource.lmdbjni.Cursor;
 import org.fusesource.lmdbjni.Database;
 import org.fusesource.lmdbjni.Entry;
 import org.fusesource.lmdbjni.EntryIterator;
 import org.fusesource.lmdbjni.Env;
+import org.fusesource.lmdbjni.GetOp;
+import org.fusesource.lmdbjni.SeekOp;
+import org.fusesource.lmdbjni.Transaction;
 
 import static org.fusesource.lmdbjni.Constants.bytes;
 import static org.fusesource.lmdbjni.Constants.string;
@@ -12,9 +16,27 @@ public class Main {
     public static void main(String[] args) {
         try (Env env = new Env("./tmp/mydb")) {
             try (Database db = env.openDatabase()) {
-                playSeek(db, "bbb");
+                playSeek2(env, db, "bb");
             }
         }
+    }
+
+    static void playSeek2(Env env, Database db, String prefix) {
+        System.out.println("seek2: prefix=" + prefix);
+        Transaction tx = env.createTransaction(true);
+        try (Cursor c = db.openCursor(tx)) {
+            Entry e = c.seek(SeekOp.RANGE, bytes(prefix));
+            while (e != null && hasPrefix(e, prefix)) {
+                printEntry(e, "  ");
+                e = c.get(GetOp.NEXT);
+            }
+        } finally {
+            tx.reset();
+        }
+    }
+
+    static boolean hasPrefix(Entry e, String prefix) {
+        return string(e.getKey()).startsWith(prefix);
     }
 
     static void playSeek(Database db, String prefix) {

@@ -4,3 +4,21 @@
 
 *   Github: https://github.com/deephacks/lmdbjni
 *   Javadoc: http://deephacks.org/lmdbjni/apidocs/index.html
+
+## Sample
+
+```
+$ gradle run
+:compileJava UP-TO-DATE
+:processResources UP-TO-DATE
+:classes UP-TO-DATE
+:run
+seek2: prefix=bb
+  key=bba value=v:bba
+  key=bbb value=v:bbb
+  key=bbc value=v:bbc
+
+BUILD SUCCESSFUL
+
+Total time: 3.117 secs
+```

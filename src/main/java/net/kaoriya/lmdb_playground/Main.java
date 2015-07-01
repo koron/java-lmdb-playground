@@ -14,10 +14,11 @@ import static org.fusesource.lmdbjni.Constants.string;
 
 public class Main {
     public static void main(String[] args) {
-        try (Env env = new Env("./tmp/mydb")) {
-            try (Database db = env.openDatabase()) {
-                playSeek2(env, db, "bb");
-            }
+        try (
+            Env env = new Env("./tmp/mydb");
+            Database db = env.openDatabase()
+        ) {
+            playSeek2(env, db, "bb");
         }
     }
 

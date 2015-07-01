@@ -11,10 +11,11 @@ repositories {
 }
 
 dependencies {
-    compile 'org.deephacks.lmdbjni:lmdbjni:0.3.2'
-    compile 'org.deephacks.lmdbjni:lmdbjni-win64:0.3.2'
-    compile 'org.deephacks.lmdbjni:lmdbjni-linux64:0.3.2'
-    compile 'org.deephacks.lmdbjni:lmdbjni-osx64:0.3.2'
+    def lmdbjni_version = '0.3.2'
+    compile "org.deephacks.lmdbjni:lmdbjni:$lmdbjni_version"
+    compile "org.deephacks.lmdbjni:lmdbjni-win64:$lmdbjni_version"
+    compile "org.deephacks.lmdbjni:lmdbjni-linux64:$lmdbjni_version"
+    compile "org.deephacks.lmdbjni:lmdbjni-osx64:$lmdbjni_version"
 
     testCompile 'junit:junit:4.11'
 }

@@ -4,7 +4,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 
 version = '0.1'
-mainClassName = 'net.kaoriya.lmdb_playground.Main'
+mainClassName = 'net.kaoriya.lmdb_playground.LongestPrefixMatch'
 
 repositories {
     mavenCentral()
@@ -16,6 +16,8 @@ dependencies {
     compile "org.deephacks.lmdbjni:lmdbjni-win64:$lmdbjni_version"
     compile "org.deephacks.lmdbjni:lmdbjni-linux64:$lmdbjni_version"
     compile "org.deephacks.lmdbjni:lmdbjni-osx64:$lmdbjni_version"
+
+    compile "commons-io:commons-io:2.4"
 
     testCompile 'junit:junit:4.11'
 }

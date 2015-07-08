@@ -12,7 +12,7 @@ import org.fusesource.lmdbjni.Transaction;
 import static org.fusesource.lmdbjni.Constants.bytes;
 import static org.fusesource.lmdbjni.Constants.string;
 
-public class Main {
+public class Simple {
     public static void main(String[] args) {
         try (
             Env env = new Env("./tmp/mydb");

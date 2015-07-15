@@ -53,15 +53,15 @@ public class LongestPrefixMatch {
         }
     }
 
-    static Entry match(Env env, Database db, String s) {
+    public static Entry match(Env env, Database db, String s) {
         Transaction tx = env.createTransaction(true);
         try (Cursor c = db.openCursor(tx)) {
             Entry e = c.seek(SeekOp.RANGE, bytes(s));
-            if (e != null && hasKeyPrefix(e, s)) {
+            if (e == null || hasKeyPrefix(e, s)) {
                 return e;
             }
-            int longestLen = countPrefixMatch(string(e.getKey()), s);
-            Entry longestEntry = longestLen > 0 ? e : null;
+            // scan the key which is prefix of query string.
+            boolean subMatch = countPrefixMatch(string(e.getKey()), s) > 0;
             while (true) {
                 e = c.get(GetOp.PREV);
                 if (e == null) {
@@ -71,15 +71,13 @@ public class LongestPrefixMatch {
                 if (s.startsWith(k)) {
                     return e;
                 }
-                int l = countPrefixMatch(k, s);
-                if (l == 0) {
-                    break;
-                } else if (longestEntry == null || l >= longestLen) {
-                    longestLen = l;
-                    longestEntry = e;
+                boolean newSubMatch = countPrefixMatch(k, s) > 0;
+                if (!newSubMatch && subMatch) {
+                    return null;
                 }
+                subMatch |= newSubMatch;
             }
-            return longestEntry;
+            return null;
         } finally {
             tx.reset();
         }

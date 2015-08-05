@@ -24,38 +24,20 @@ public class Simple {
 
     static void playSeek2(Env env, Database db, String prefix) {
         System.out.println("seek2: prefix=" + prefix);
-        Transaction tx = env.createTransaction(true);
-        try (Cursor c = db.openCursor(tx)) {
+        try (
+            Transaction tx = env.createTransaction(true);
+            Cursor c = db.openCursor(tx);
+        ) {
             Entry e = c.seek(SeekOp.RANGE, bytes(prefix));
             while (e != null && hasPrefix(e, prefix)) {
                 printEntry(e, "  ");
                 e = c.get(GetOp.NEXT);
             }
-        } finally {
-            tx.reset();
         }
     }
 
     static boolean hasPrefix(Entry e, String prefix) {
         return string(e.getKey()).startsWith(prefix);
-    }
-
-    static void playSeek(Database db, String prefix) {
-        System.out.println("prefix=" + prefix);
-        // seek returns valid iter when key matches exactly.
-        try (EntryIterator it = db.seek(bytes(prefix))) {
-            for (Entry e : it.iterable()) {
-                printEntry(e, "  ");
-            }
-        }
-    }
-
-    static void playIter(Database db) {
-        try (EntryIterator it = db.iterate()) {
-            for (Entry e : it.iterable()) {
-                printEntry(e);
-            }
-        }
     }
 
     static void printEntry(Entry entry) {

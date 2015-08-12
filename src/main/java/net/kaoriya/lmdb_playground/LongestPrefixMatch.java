@@ -21,38 +21,6 @@ import static net.kaoriya.lmdb_playground.LMDBUtils.*;
 
 public class LongestPrefixMatch {
 
-    public static void main(String[] args) {
-        lpm01();
-    }
-
-    static void lpm01() {
-        runNewEnv("tmp/lpm01", true, (env, db) -> {
-            putKeys(db, new String[]{
-                "aa", "ab", "abc",
-                "ba", "bb", "bc",
-                "ca", "cbd", "cc",
-            });
-
-            // FOUND: prefix=abc key=abc
-            // FOUND: prefix=bbc key=bb
-            // FOUND: prefix=cbc key=cbd
-            test(env, db, "abc");
-            test(env, db, "bbc");
-            test(env, db, "cbc");
-        });
-    }
-
-    static void test(Env env, Database db, String s) {
-        Entry e = match(env, db, s);
-        if (e != null) {
-            System.out.printf("FOUND: prefix=%s key=%s", s,
-                    string(e.getKey()));
-            System.out.println();
-        } else {
-            System.out.printf("NOT_FOUND: prefix=%s", s);
-        }
-    }
-
     public static Entry match(Env env, Database db, String s) {
         Transaction tx = env.createTransaction(true);
         try (Cursor c = db.openCursor(tx)) {

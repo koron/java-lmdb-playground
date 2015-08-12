@@ -6,14 +6,8 @@ import java.util.function.BiConsumer;
 
 import org.apache.commons.io.FileUtils;
 
-import org.fusesource.lmdbjni.Cursor;
 import org.fusesource.lmdbjni.Database;
-import org.fusesource.lmdbjni.Entry;
-import org.fusesource.lmdbjni.EntryIterator;
 import org.fusesource.lmdbjni.Env;
-import org.fusesource.lmdbjni.GetOp;
-import org.fusesource.lmdbjni.SeekOp;
-import org.fusesource.lmdbjni.Transaction;
 
 import static org.fusesource.lmdbjni.Constants.bytes;
 import static org.fusesource.lmdbjni.Constants.string;

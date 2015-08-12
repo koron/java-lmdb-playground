@@ -73,3 +73,7 @@ lmdb/lmdb-win64/pom.xml の 42行目付近の `<argument>` 要素に `-DMDB_MAXK
 変更後:
 
     <argument>XCFLAGS=-fno-stack-check -fno-stack-protector -mno-stack-arg-probe -ffunction-sections -DMDB_MAXKEYSIZE=1023</argument>
+
+## 留意事項
+
+ComparatorTest が失敗している関係で、それ以降のテストが実行されません。

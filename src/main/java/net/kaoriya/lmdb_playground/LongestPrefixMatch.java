@@ -21,8 +21,18 @@ import static net.kaoriya.lmdb_playground.LMDBUtils.*;
 
 public class LongestPrefixMatch {
 
+
     public static Entry match(Env env, Database db, String s) {
         Transaction tx = env.createTransaction(true);
+        try {
+            return match(tx, db, s);
+        } finally {
+            tx.reset();
+            tx.close();
+        }
+    }
+
+    public static Entry match(Transaction tx, Database db, String s) {
         try (Cursor c = db.openCursor(tx)) {
             Entry e = c.seek(SeekOp.RANGE, bytes(s));
             if (e == null || hasKeyPrefix(e, s)) {
@@ -46,8 +56,6 @@ public class LongestPrefixMatch {
                 subMatch |= newSubMatch;
             }
             return null;
-        } finally {
-            tx.reset();
         }
     }
 

@@ -22,3 +22,29 @@ BUILD SUCCESSFUL
 
 Total time: 3.117 secs
 ```
+
+### Benchmark results
+
+```
+HitRate:0.10 KeyCount:100000 KeyLen:128 ValLen:128
+  no-suffix, no-query for control - QPS:36937802.28 HitRate:0.100
+  no-suffix, no-tx - QPS:5490.27 HitRate:0.100
+  no-suffix, with-tx - QPS:6074.55 HitRate:0.098
+  with-suffix, no-query for control - QPS:1841589.76 HitRate:0.100
+  with-suffix, no-tx - QPS:6241.40 HitRate:0.101
+  with-suffix, with-tx - QPS:6249.33 HitRate:0.098
+HitRate:0.50 KeyCount:100000 KeyLen:128 ValLen:128
+  no-suffix, no-query for control - QPS:36066703.13 HitRate:0.500
+  no-suffix, no-tx - QPS:11166.14 HitRate:0.500
+  no-suffix, with-tx - QPS:11521.69 HitRate:0.505
+  with-suffix, no-query for control - QPS:2005055.74 HitRate:0.500
+  with-suffix, no-tx - QPS:11040.14 HitRate:0.496
+  with-suffix, with-tx - QPS:11283.90 HitRate:0.500
+HitRate:0.90 KeyCount:100000 KeyLen:128 ValLen:128
+  no-suffix, no-query for control - QPS:37218255.57 HitRate:0.900
+  no-suffix, no-tx - QPS:49614.16 HitRate:0.899
+  no-suffix, with-tx - QPS:49523.24 HitRate:0.899
+  with-suffix, no-query for control - QPS:2058071.53 HitRate:0.900
+  with-suffix, no-tx - QPS:48916.96 HitRate:0.899
+  with-suffix, with-tx - QPS:50043.98 HitRate:0.900
+```

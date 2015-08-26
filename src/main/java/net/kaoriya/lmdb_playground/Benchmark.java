@@ -3,6 +3,7 @@ package net.kaoriya.lmdb_playground;
 import java.util.Random;
 
 import org.fusesource.lmdbjni.Database;
+import org.fusesource.lmdbjni.DirectBuffer;
 import org.fusesource.lmdbjni.Entry;
 import org.fusesource.lmdbjni.Env;
 import org.fusesource.lmdbjni.Transaction;
@@ -19,6 +20,7 @@ public class Benchmark {
 
     public final static long SECOND = 1000_000_000L;
     public final static long BENCHMARK_DURATION = 5 * SECOND;
+    public final static int MDB_NOTFOUND = -30798;
 
     private String dir;
     private double hitRate;
@@ -106,12 +108,105 @@ public class Benchmark {
         Result r = new Result("no-suffix, with-tx");
         Random rand = new Random();
         r.start(intervalNano);
-        try (Transaction tx = env.createTransaction(true)) {
+        try (Transaction tx = env.createReadTransaction()) {
             while (r.isContinue()) {
                 String k = this.keys[rand.nextInt(this.keys.length)];
                 Entry entry = LongestPrefixMatch.match(tx, db, k);
                 r.countQuery(entry != null);
             }
+        }
+        r.stop();
+        return r;
+    }
+
+    public Result runTest3(
+            long intervalNano,
+            Env env,
+            Database db)
+    {
+        Result r = new Result("exact-match, no-tx");
+        Random rand = new Random();
+        r.start(intervalNano);
+        while (r.isContinue()) {
+            String k = this.keys[rand.nextInt(this.keys.length)];
+            Entry entry = LongestPrefixMatch.exactMatch(env, db, k);
+            r.countQuery(entry != null);
+        }
+        r.stop();
+        return r;
+    }
+
+    public Result runTest4(
+            long intervalNano,
+            Env env,
+            Database db)
+    {
+        Result r = new Result("exact-match, with-tx");
+        Random rand = new Random();
+        r.start(intervalNano);
+        try (Transaction tx = env.createReadTransaction()) {
+            while (r.isContinue()) {
+                String k = this.keys[rand.nextInt(this.keys.length)];
+                Entry entry = LongestPrefixMatch.exactMatch(tx, db, k);
+                r.countQuery(entry != null);
+            }
+        }
+        r.stop();
+        return r;
+    }
+
+    public Result runTest20(
+            long intervalNano,
+            Env env,
+            Database db)
+    {
+        Result r = new Result("get-exact, with-tx");
+        Random rand = new Random();
+        r.start(intervalNano);
+        while (r.isContinue()) {
+            String k = this.keys[rand.nextInt(this.keys.length)];
+            byte[] v = db.get(bytes(k));
+            r.countQuery(v != null);
+        }
+        r.stop();
+        return r;
+    }
+
+    public Result runTest21(
+            long intervalNano,
+            Env env,
+            Database db)
+    {
+        Result r = new Result("get-exact, with-tx");
+        Random rand = new Random();
+        r.start(intervalNano);
+        try (Transaction tx = env.createReadTransaction()) {
+            while (r.isContinue()) {
+                String k = this.keys[rand.nextInt(this.keys.length)];
+                byte[] v = db.get(tx, bytes(k));
+                r.countQuery(v != null);
+            }
+        }
+        r.stop();
+        return r;
+    }
+
+    public Result runTest22(
+            long intervalNano,
+            Env env,
+            Database db)
+    {
+        Result r = new Result("get-less-copy, with-tx");
+        Random rand = new Random();
+        DirectBuffer kbuf = new DirectBuffer();
+        DirectBuffer vbuf = new DirectBuffer();
+        r.start(intervalNano);
+        while (r.isContinue()) {
+            String k = this.keys[rand.nextInt(this.keys.length)];
+            kbuf.wrap(bytes(k));
+            // XXX: Doesn't work for Windows.
+            int rc = db.get(kbuf, vbuf);
+            r.countQuery(rc != MDB_NOTFOUND);
         }
         r.stop();
         return r;
@@ -161,7 +256,7 @@ public class Benchmark {
         Result r = new Result("with-suffix, with-tx");
         Random rand = new Random();
         r.start(intervalNano);
-        try (Transaction tx = env.createTransaction(true)) {
+        try (Transaction tx = env.createReadTransaction()) {
             while (r.isContinue()) {
                 String k = this.keys[rand.nextInt(this.keys.length)];
                 k += this.suffixGen.generate();
@@ -175,19 +270,33 @@ public class Benchmark {
 
     public void measureBenchmark() throws Exception {
         runNewEnv(this.dir, false, (env, db) -> {
-            Result r0 = runTest0(BENCHMARK_DURATION, env, db);
-            System.out.println("  " + r0.toString());
+            //Result r0 = runTest0(BENCHMARK_DURATION, env, db);
+            //System.out.println("  " + r0.toString());
+
             Result r1 = runTest1(BENCHMARK_DURATION, env, db);
             System.out.println("  " + r1.toString());
             Result r2 = runTest2(BENCHMARK_DURATION, env, db);
             System.out.println("  " + r2.toString());
 
-            Result r10 = runTest10(BENCHMARK_DURATION, env, db);
-            System.out.println("  " + r10.toString());
-            Result r11 = runTest11(BENCHMARK_DURATION, env, db);
-            System.out.println("  " + r11.toString());
-            Result r12 = runTest12(BENCHMARK_DURATION, env, db);
-            System.out.println("  " + r12.toString());
+            //Result r3 = runTest3(BENCHMARK_DURATION, env, db);
+            //System.out.println("  " + r3.toString());
+            //Result r4 = runTest4(BENCHMARK_DURATION, env, db);
+            //System.out.println("  " + r4.toString());
+
+            //Result r10 = runTest10(BENCHMARK_DURATION, env, db);
+            //System.out.println("  " + r10.toString());
+            //Result r11 = runTest11(BENCHMARK_DURATION, env, db);
+            //System.out.println("  " + r11.toString());
+            //Result r12 = runTest12(BENCHMARK_DURATION, env, db);
+            //System.out.println("  " + r12.toString());
+
+            Result r20 = runTest20(BENCHMARK_DURATION, env, db);
+            System.out.println("  " + r20.toString());
+            Result r21 = runTest21(BENCHMARK_DURATION, env, db);
+            System.out.println("  " + r21.toString());
+
+            //Result r22 = runTest22(BENCHMARK_DURATION, env, db);
+            //System.out.println("  " + r22.toString());
         });
     }
 

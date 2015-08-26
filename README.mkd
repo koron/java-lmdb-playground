@@ -25,6 +25,8 @@ Total time: 3.117 secs
 
 ### Benchmark results
 
+#### 2015/08/19 version
+
 ```
 HitRate:0.10 KeyCount:100000 KeyLen:128 ValLen:128
   no-suffix, no-query for control - QPS:36937802.28 HitRate:0.100
@@ -47,4 +49,26 @@ HitRate:0.90 KeyCount:100000 KeyLen:128 ValLen:128
   with-suffix, no-query for control - QPS:2058071.53 HitRate:0.900
   with-suffix, no-tx - QPS:48916.96 HitRate:0.899
   with-suffix, with-tx - QPS:50043.98 HitRate:0.900
+```
+
+#### 2015/08/26 version
+
+Comparing "longest prefix match" vs "exact match".
+
+```
+HitRate:0.10 KeyCount:100000 KeyLen:128 ValLen:128
+  no-suffix, no-tx - QPS:5578.10 HitRate:0.101
+  no-suffix, with-tx - QPS:6091.70 HitRate:0.102
+  get-exact, with-tx - QPS:809738.99 HitRate:0.100
+  get-exact, with-tx - QPS:999343.09 HitRate:0.100
+HitRate:0.50 KeyCount:100000 KeyLen:128 ValLen:128
+  no-suffix, no-tx - QPS:10919.97 HitRate:0.501
+  no-suffix, with-tx - QPS:11025.75 HitRate:0.498
+  get-exact, with-tx - QPS:819970.17 HitRate:0.500
+  get-exact, with-tx - QPS:1027641.50 HitRate:0.500
+HitRate:0.90 KeyCount:100000 KeyLen:128 ValLen:128
+  no-suffix, no-tx - QPS:50152.20 HitRate:0.900
+  no-suffix, with-tx - QPS:49323.24 HitRate:0.900
+  get-exact, with-tx - QPS:803594.98 HitRate:0.900
+  get-exact, with-tx - QPS:1055236.84 HitRate:0.900
 ```

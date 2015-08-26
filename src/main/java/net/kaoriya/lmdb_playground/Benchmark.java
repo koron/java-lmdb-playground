@@ -1,6 +1,7 @@
 package net.kaoriya.lmdb_playground;
 
 import java.util.Random;
+import java.util.function.Function;
 
 import org.fusesource.lmdbjni.Database;
 import org.fusesource.lmdbjni.DirectBuffer;
@@ -66,14 +67,10 @@ public class Benchmark {
         this.suffixGen = new Generator(this.keySuffixLen);
     }
 
-    public Result runTest0(
-            long intervalNano,
-            Env env,
-            Database db)
-    {
+    public Result runTest0(Params p) {
         Result r = new Result("no-suffix, no-query for control");
         Random rand = new Random();
-        r.start(intervalNano);
+        r.start(p.intervalNano);
         while (r.isContinue()) {
             int i = rand.nextInt(this.keys.length);
             String k = this.keys[i];
@@ -83,35 +80,27 @@ public class Benchmark {
         return r;
     }
 
-    public Result runTest1(
-            long intervalNano,
-            Env env,
-            Database db)
-    {
+    public Result runTest1(Params p) {
         Result r = new Result("no-suffix, no-tx");
         Random rand = new Random();
-        r.start(intervalNano);
+        r.start(p.intervalNano);
         while (r.isContinue()) {
             String k = this.keys[rand.nextInt(this.keys.length)];
-            Entry entry = LongestPrefixMatch.match(env, db, k);
+            Entry entry = LongestPrefixMatch.match(p.env, p.db, k);
             r.countQuery(entry != null);
         }
         r.stop();
         return r;
     }
 
-    public Result runTest2(
-            long intervalNano,
-            Env env,
-            Database db)
-    {
+    public Result runTest2(Params p) {
         Result r = new Result("no-suffix, with-tx");
         Random rand = new Random();
-        r.start(intervalNano);
-        try (Transaction tx = env.createReadTransaction()) {
+        r.start(p.intervalNano);
+        try (Transaction tx = p.env.createReadTransaction()) {
             while (r.isContinue()) {
                 String k = this.keys[rand.nextInt(this.keys.length)];
-                Entry entry = LongestPrefixMatch.match(tx, db, k);
+                Entry entry = LongestPrefixMatch.match(tx, p.db, k);
                 r.countQuery(entry != null);
             }
         }
@@ -119,35 +108,27 @@ public class Benchmark {
         return r;
     }
 
-    public Result runTest3(
-            long intervalNano,
-            Env env,
-            Database db)
-    {
+    public Result runTest3(Params p) {
         Result r = new Result("exact-match, no-tx");
         Random rand = new Random();
-        r.start(intervalNano);
+        r.start(p.intervalNano);
         while (r.isContinue()) {
             String k = this.keys[rand.nextInt(this.keys.length)];
-            Entry entry = LongestPrefixMatch.exactMatch(env, db, k);
+            Entry entry = LongestPrefixMatch.exactMatch(p.env, p.db, k);
             r.countQuery(entry != null);
         }
         r.stop();
         return r;
     }
 
-    public Result runTest4(
-            long intervalNano,
-            Env env,
-            Database db)
-    {
+    public Result runTest4(Params p) {
         Result r = new Result("exact-match, with-tx");
         Random rand = new Random();
-        r.start(intervalNano);
-        try (Transaction tx = env.createReadTransaction()) {
+        r.start(p.intervalNano);
+        try (Transaction tx = p.env.createReadTransaction()) {
             while (r.isContinue()) {
                 String k = this.keys[rand.nextInt(this.keys.length)];
-                Entry entry = LongestPrefixMatch.exactMatch(tx, db, k);
+                Entry entry = LongestPrefixMatch.exactMatch(tx, p.db, k);
                 r.countQuery(entry != null);
             }
         }
@@ -155,35 +136,27 @@ public class Benchmark {
         return r;
     }
 
-    public Result runTest20(
-            long intervalNano,
-            Env env,
-            Database db)
-    {
+    public Result runTest20(Params p) {
         Result r = new Result("get-exact, with-tx");
         Random rand = new Random();
-        r.start(intervalNano);
+        r.start(p.intervalNano);
         while (r.isContinue()) {
             String k = this.keys[rand.nextInt(this.keys.length)];
-            byte[] v = db.get(bytes(k));
+            byte[] v = p.db.get(bytes(k));
             r.countQuery(v != null);
         }
         r.stop();
         return r;
     }
 
-    public Result runTest21(
-            long intervalNano,
-            Env env,
-            Database db)
-    {
+    public Result runTest21(Params p) {
         Result r = new Result("get-exact, with-tx");
         Random rand = new Random();
-        r.start(intervalNano);
-        try (Transaction tx = env.createReadTransaction()) {
+        r.start(p.intervalNano);
+        try (Transaction tx = p.env.createReadTransaction()) {
             while (r.isContinue()) {
                 String k = this.keys[rand.nextInt(this.keys.length)];
-                byte[] v = db.get(tx, bytes(k));
+                byte[] v = p.db.get(tx, bytes(k));
                 r.countQuery(v != null);
             }
         }
@@ -191,35 +164,27 @@ public class Benchmark {
         return r;
     }
 
-    public Result runTest22(
-            long intervalNano,
-            Env env,
-            Database db)
-    {
+    public Result runTest22(Params p) {
         Result r = new Result("get-less-copy, with-tx");
         Random rand = new Random();
         DirectBuffer kbuf = new DirectBuffer();
         DirectBuffer vbuf = new DirectBuffer();
-        r.start(intervalNano);
+        r.start(p.intervalNano);
         while (r.isContinue()) {
             String k = this.keys[rand.nextInt(this.keys.length)];
             kbuf.wrap(bytes(k));
             // XXX: Doesn't work for Windows.
-            int rc = db.get(kbuf, vbuf);
+            int rc = p.db.get(kbuf, vbuf);
             r.countQuery(rc != MDB_NOTFOUND);
         }
         r.stop();
         return r;
     }
 
-    public Result runTest10(
-            long intervalNano,
-            Env env,
-            Database db)
-    {
+    public Result runTest10(Params p) {
         Result r = new Result("with-suffix, no-query for control");
         Random rand = new Random();
-        r.start(intervalNano);
+        r.start(p.intervalNano);
         while (r.isContinue()) {
             int i = rand.nextInt(this.keys.length);
             String k = this.keys[i];
@@ -230,37 +195,29 @@ public class Benchmark {
         return r;
     }
 
-    public Result runTest11(
-            long intervalNano,
-            Env env,
-            Database db)
-    {
+    public Result runTest11(Params p) {
         Result r = new Result("with-suffix, no-tx");
         Random rand = new Random();
-        r.start(intervalNano);
+        r.start(p.intervalNano);
         while (r.isContinue()) {
             String k = this.keys[rand.nextInt(this.keys.length)];
             k += this.suffixGen.generate();
-            Entry entry = LongestPrefixMatch.match(env, db, k);
+            Entry entry = LongestPrefixMatch.match(p.env, p.db, k);
             r.countQuery(entry != null);
         }
         r.stop();
         return r;
     }
 
-    public Result runTest12(
-            long intervalNano,
-            Env env,
-            Database db)
-    {
+    public Result runTest12(Params p) {
         Result r = new Result("with-suffix, with-tx");
         Random rand = new Random();
-        r.start(intervalNano);
-        try (Transaction tx = env.createReadTransaction()) {
+        r.start(p.intervalNano);
+        try (Transaction tx = p.env.createReadTransaction()) {
             while (r.isContinue()) {
                 String k = this.keys[rand.nextInt(this.keys.length)];
                 k += this.suffixGen.generate();
-                Entry entry = LongestPrefixMatch.match(tx, db, k);
+                Entry entry = LongestPrefixMatch.match(tx, p.db, k);
                 r.countQuery(entry != null);
             }
         }
@@ -270,33 +227,25 @@ public class Benchmark {
 
     public void measureBenchmark() throws Exception {
         runNewEnv(this.dir, false, (env, db) -> {
-            //Result r0 = runTest0(BENCHMARK_DURATION, env, db);
-            //System.out.println("  " + r0.toString());
+            Runner runner = new Runner(BENCHMARK_DURATION, env, db);
 
-            Result r1 = runTest1(BENCHMARK_DURATION, env, db);
-            System.out.println("  " + r1.toString());
-            Result r2 = runTest2(BENCHMARK_DURATION, env, db);
-            System.out.println("  " + r2.toString());
+            //runner.run(this::runTest0);
+            runner.run(this::runTest1);
+            runner.run(this::runTest2);
 
-            //Result r3 = runTest3(BENCHMARK_DURATION, env, db);
-            //System.out.println("  " + r3.toString());
-            //Result r4 = runTest4(BENCHMARK_DURATION, env, db);
-            //System.out.println("  " + r4.toString());
+            // get-exact is not used. slow, redundant.
+            //runner.run(this::runTest3);
+            //runner.run(this::runTest4);
 
-            //Result r10 = runTest10(BENCHMARK_DURATION, env, db);
-            //System.out.println("  " + r10.toString());
-            //Result r11 = runTest11(BENCHMARK_DURATION, env, db);
-            //System.out.println("  " + r11.toString());
-            //Result r12 = runTest12(BENCHMARK_DURATION, env, db);
-            //System.out.println("  " + r12.toString());
+            // with-suffix commented, not now.
+            //runner.run(this::runTest10);
+            //runner.run(this::runTest11);
+            //runner.run(this::runTest12);
 
-            Result r20 = runTest20(BENCHMARK_DURATION, env, db);
-            System.out.println("  " + r20.toString());
-            Result r21 = runTest21(BENCHMARK_DURATION, env, db);
-            System.out.println("  " + r21.toString());
-
-            //Result r22 = runTest22(BENCHMARK_DURATION, env, db);
-            //System.out.println("  " + r22.toString());
+            runner.run(this::runTest20);
+            runner.run(this::runTest21);
+            // XXX: less-copy doesn't work on Windows.
+            //runner.run(this::runTest22);
         });
     }
 
@@ -338,6 +287,31 @@ public class Benchmark {
 
         private char getChar() {
             return this.table.charAt(this.r.nextInt(this.table.length()));
+        }
+    }
+
+    public static class Params {
+        public final long intervalNano;
+        public final Env env;
+        public final Database db;
+
+        public Params(long intervalNano, Env env, Database db) {
+            this.intervalNano = intervalNano;
+            this.env = env;
+            this.db = db;
+        }
+    }
+
+    public static class Runner {
+        public final Params params;
+
+        public Runner(long intervalNano, Env env, Database db) {
+            this.params = new Params(intervalNano, env, db);
+        }
+
+        public void run(Function<Params, Result> f) {
+            Result r = f.apply(this.params);
+            System.out.println("  " + r.toString());
         }
     }
 

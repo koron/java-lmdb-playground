@@ -57,18 +57,18 @@ Comparing "longest prefix match" vs "exact match".
 
 ```
 HitRate:0.10 KeyCount:100000 KeyLen:128 ValLen:128
-  no-suffix, no-tx - QPS:5578.10 HitRate:0.101
-  no-suffix, with-tx - QPS:6091.70 HitRate:0.102
-  get-exact, with-tx - QPS:809738.99 HitRate:0.100
-  get-exact, with-tx - QPS:999343.09 HitRate:0.100
+  no-suffix, no-tx - QPS:5136.12 HitRate:0.099
+  no-suffix, with-tx - QPS:5551.15 HitRate:0.104
+  get-exact, no-tx - QPS:729263.13 HitRate:0.100
+  get-exact, with-tx - QPS:903617.18 HitRate:0.100
 HitRate:0.50 KeyCount:100000 KeyLen:128 ValLen:128
-  no-suffix, no-tx - QPS:10919.97 HitRate:0.501
-  no-suffix, with-tx - QPS:11025.75 HitRate:0.498
-  get-exact, with-tx - QPS:819970.17 HitRate:0.500
-  get-exact, with-tx - QPS:1027641.50 HitRate:0.500
+  no-suffix, no-tx - QPS:10454.62 HitRate:0.499
+  no-suffix, with-tx - QPS:10720.56 HitRate:0.503
+  get-exact, no-tx - QPS:753163.77 HitRate:0.500
+  get-exact, with-tx - QPS:961362.13 HitRate:0.500
 HitRate:0.90 KeyCount:100000 KeyLen:128 ValLen:128
-  no-suffix, no-tx - QPS:50152.20 HitRate:0.900
-  no-suffix, with-tx - QPS:49323.24 HitRate:0.900
-  get-exact, with-tx - QPS:803594.98 HitRate:0.900
-  get-exact, with-tx - QPS:1055236.84 HitRate:0.900
+  no-suffix, no-tx - QPS:48440.95 HitRate:0.899
+  no-suffix, with-tx - QPS:47727.51 HitRate:0.900
+  get-exact, no-tx - QPS:782650.65 HitRate:0.900
+  get-exact, with-tx - QPS:973108.95 HitRate:0.900
 ```

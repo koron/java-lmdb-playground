@@ -2,6 +2,7 @@ package net.kaoriya.lmdb_playground;
 
 import java.util.Random;
 import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import org.fusesource.lmdbjni.Database;
 import org.fusesource.lmdbjni.DirectBuffer;
@@ -67,162 +68,122 @@ public class Benchmark {
         this.suffixGen = new Generator(this.keySuffixLen);
     }
 
-    public Result runTest0(Params p) {
-        Result r = new Result("no-suffix, no-query for control");
+    private Result runWithoutTx(
+            Params p,
+            String label,
+            BiFunction<Integer, String, Boolean> f)
+    {
+        Result r = new Result(label);
         Random rand = new Random();
         r.start(p.intervalNano);
         while (r.isContinue()) {
             int i = rand.nextInt(this.keys.length);
             String k = this.keys[i];
-            r.countQuery(i < this.keyCount);
+            r.countQuery(f.apply(i, k));
         }
         r.stop();
         return r;
+    }
+
+    private Result runWithTx(
+            Params p,
+            String label,
+            BiFunction<Transaction, String, Boolean> f)
+    {
+        Result r = new Result(label);
+        Random rand = new Random();
+        r.start(p.intervalNano);
+        try (Transaction tx = p.env.createReadTransaction()) {
+            while (r.isContinue()) {
+                int i = rand.nextInt(this.keys.length);
+                String k = this.keys[i];
+                r.countQuery(f.apply(tx, k));
+            }
+        }
+        r.stop();
+        return r;
+    }
+
+    public Result runTest0(Params p) {
+        return runWithoutTx(p, "no-suffix, no-query for control", (i, k) -> {
+            return i < this.keyCount;
+        });
     }
 
     public Result runTest1(Params p) {
-        Result r = new Result("no-suffix, no-tx");
-        Random rand = new Random();
-        r.start(p.intervalNano);
-        while (r.isContinue()) {
-            String k = this.keys[rand.nextInt(this.keys.length)];
+        return runWithoutTx(p, "no-suffix, no-tx", (i, k) -> {
             Entry entry = LongestPrefixMatch.match(p.env, p.db, k);
-            r.countQuery(entry != null);
-        }
-        r.stop();
-        return r;
+            return entry != null;
+        });
     }
 
     public Result runTest2(Params p) {
-        Result r = new Result("no-suffix, with-tx");
-        Random rand = new Random();
-        r.start(p.intervalNano);
-        try (Transaction tx = p.env.createReadTransaction()) {
-            while (r.isContinue()) {
-                String k = this.keys[rand.nextInt(this.keys.length)];
-                Entry entry = LongestPrefixMatch.match(tx, p.db, k);
-                r.countQuery(entry != null);
-            }
-        }
-        r.stop();
-        return r;
+        return runWithTx(p, "no-suffix, with-tx", (tx, k) -> {
+            Entry entry = LongestPrefixMatch.match(tx, p.db, k);
+            return entry != null;
+        });
     }
 
     public Result runTest3(Params p) {
-        Result r = new Result("exact-match, no-tx");
-        Random rand = new Random();
-        r.start(p.intervalNano);
-        while (r.isContinue()) {
-            String k = this.keys[rand.nextInt(this.keys.length)];
+        return runWithoutTx(p, "exact-match, no-tx", (i, k) -> {
             Entry entry = LongestPrefixMatch.exactMatch(p.env, p.db, k);
-            r.countQuery(entry != null);
-        }
-        r.stop();
-        return r;
+            return entry != null;
+        });
     }
 
     public Result runTest4(Params p) {
-        Result r = new Result("exact-match, with-tx");
-        Random rand = new Random();
-        r.start(p.intervalNano);
-        try (Transaction tx = p.env.createReadTransaction()) {
-            while (r.isContinue()) {
-                String k = this.keys[rand.nextInt(this.keys.length)];
-                Entry entry = LongestPrefixMatch.exactMatch(tx, p.db, k);
-                r.countQuery(entry != null);
-            }
-        }
-        r.stop();
-        return r;
+        return runWithTx(p, "exact-match, with-tx", (tx, k) -> {
+            Entry entry = LongestPrefixMatch.exactMatch(tx, p.db, k);
+            return entry != null;
+        });
     }
 
     public Result runTest20(Params p) {
-        Result r = new Result("get-exact, with-tx");
-        Random rand = new Random();
-        r.start(p.intervalNano);
-        while (r.isContinue()) {
-            String k = this.keys[rand.nextInt(this.keys.length)];
+        return runWithoutTx(p, "get-exact, no-tx", (i, k) -> {
             byte[] v = p.db.get(bytes(k));
-            r.countQuery(v != null);
-        }
-        r.stop();
-        return r;
+            return v != null;
+        });
     }
 
     public Result runTest21(Params p) {
-        Result r = new Result("get-exact, with-tx");
-        Random rand = new Random();
-        r.start(p.intervalNano);
-        try (Transaction tx = p.env.createReadTransaction()) {
-            while (r.isContinue()) {
-                String k = this.keys[rand.nextInt(this.keys.length)];
-                byte[] v = p.db.get(tx, bytes(k));
-                r.countQuery(v != null);
-            }
-        }
-        r.stop();
-        return r;
+        return runWithTx(p, "get-exact, with-tx", (tx, k) -> {
+            byte[] v = p.db.get(tx, bytes(k));
+            return v != null;
+        });
     }
 
     public Result runTest22(Params p) {
-        Result r = new Result("get-less-copy, with-tx");
-        Random rand = new Random();
         DirectBuffer kbuf = new DirectBuffer();
         DirectBuffer vbuf = new DirectBuffer();
-        r.start(p.intervalNano);
-        while (r.isContinue()) {
-            String k = this.keys[rand.nextInt(this.keys.length)];
+        return runWithoutTx(p, "get-less-copy, no-tx", (i, k) -> {
             kbuf.wrap(bytes(k));
             // XXX: Doesn't work for Windows.
             int rc = p.db.get(kbuf, vbuf);
-            r.countQuery(rc != MDB_NOTFOUND);
-        }
-        r.stop();
-        return r;
+            return rc != MDB_NOTFOUND;
+        });
     }
 
     public Result runTest10(Params p) {
-        Result r = new Result("with-suffix, no-query for control");
-        Random rand = new Random();
-        r.start(p.intervalNano);
-        while (r.isContinue()) {
-            int i = rand.nextInt(this.keys.length);
-            String k = this.keys[i];
+        return runWithoutTx(p, "with-suffix, no-query for control", (i, k) -> {
             k += this.suffixGen.generate();
-            r.countQuery(i < this.keyCount);
-        }
-        r.stop();
-        return r;
+            return i < this.keyCount;
+        });
     }
 
     public Result runTest11(Params p) {
-        Result r = new Result("with-suffix, no-tx");
-        Random rand = new Random();
-        r.start(p.intervalNano);
-        while (r.isContinue()) {
-            String k = this.keys[rand.nextInt(this.keys.length)];
+        return runWithoutTx(p, "with-suffix, no-tx", (i, k) -> {
             k += this.suffixGen.generate();
             Entry entry = LongestPrefixMatch.match(p.env, p.db, k);
-            r.countQuery(entry != null);
-        }
-        r.stop();
-        return r;
+            return entry != null;
+        });
     }
 
     public Result runTest12(Params p) {
-        Result r = new Result("with-suffix, with-tx");
-        Random rand = new Random();
-        r.start(p.intervalNano);
-        try (Transaction tx = p.env.createReadTransaction()) {
-            while (r.isContinue()) {
-                String k = this.keys[rand.nextInt(this.keys.length)];
-                k += this.suffixGen.generate();
-                Entry entry = LongestPrefixMatch.match(tx, p.db, k);
-                r.countQuery(entry != null);
-            }
-        }
-        r.stop();
-        return r;
+        return runWithTx(p, "with-suffix, with-tx", (tx, k) -> {
+            k += this.suffixGen.generate();
+            Entry entry = LongestPrefixMatch.match(tx, p.db, k);
+            return entry != null;
+        });
     }
 
     public void measureBenchmark() throws Exception {

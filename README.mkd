@@ -72,3 +72,25 @@ HitRate:0.90 KeyCount:100000 KeyLen:128 ValLen:128
   get-exact, no-tx - QPS:782650.65 HitRate:0.900
   get-exact, with-tx - QPS:973108.95 HitRate:0.900
 ```
+
+#### 2015/09/02 version
+
+Using incremental search.
+
+```
+HitRate:0.10 KeyCount:100000 KeyLen:128 ValLen:128
+  no-suffix, no-tx - QPS:238917.40 HitRate:0.100
+  no-suffix, with-tx - QPS:263178.29 HitRate:0.100
+  get-exact, no-tx - QPS:764965.46 HitRate:0.100
+  get-exact, with-tx - QPS:953614.09 HitRate:0.100
+HitRate:0.50 KeyCount:100000 KeyLen:128 ValLen:128
+  no-suffix, no-tx - QPS:254731.83 HitRate:0.500
+  no-suffix, with-tx - QPS:287166.47 HitRate:0.500
+  get-exact, no-tx - QPS:757378.56 HitRate:0.500
+  get-exact, with-tx - QPS:998419.35 HitRate:0.500
+HitRate:0.90 KeyCount:100000 KeyLen:128 ValLen:128
+  no-suffix, no-tx - QPS:260261.17 HitRate:0.900
+  no-suffix, with-tx - QPS:290268.33 HitRate:0.900
+  get-exact, no-tx - QPS:731709.77 HitRate:0.900
+  get-exact, with-tx - QPS:989383.65 HitRate:0.900
+```

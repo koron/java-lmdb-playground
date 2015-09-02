@@ -2,6 +2,7 @@ package net.kaoriya.lmdb_playground;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
 
@@ -32,6 +33,10 @@ public class LongestPrefixMatch {
     }
 
     public static Entry match(Transaction tx, Database db, String s) {
+        return match2(tx, db, s);
+    }
+
+    private static Entry match1(Transaction tx, Database db, String s) {
         try (Cursor c = db.openCursor(tx)) {
             Entry e = c.seek(SeekOp.RANGE, bytes(s));
             if (e == null || hasKeyPrefix(e, s)) {
@@ -55,6 +60,38 @@ public class LongestPrefixMatch {
                 subMatch |= newSubMatch;
             }
             return null;
+        }
+    }
+
+    private static Entry match2(Transaction tx, Database db, String s) {
+        if (s == null || s.length() == 0) {
+            return null;
+        }
+        try (Cursor c = db.openCursor(tx)) {
+            Entry found = null;
+            for (int i = 1, l = s.length(); i <= l; ++i) {
+                byte[] queryBytes = bytes(s.substring(0, i));
+                Entry e = c.seek(SeekOp.RANGE, queryBytes);
+                if (e == null) {
+                    break;
+                }
+                byte[] keyBytes = e.getKey();
+                if (Arrays.equals(queryBytes, keyBytes)) {
+                    found = e;
+                    continue;
+                }
+                String keyString = string(e.getKey());
+                int n = countPrefixMatch(s, keyString);
+                if (n < i) {
+                    break;
+                } else if (n > i) {
+                    i = n;
+                    if (n == keyString.length()) {
+                        found = e;
+                    }
+                }
+            }
+            return found;
         }
     }
 

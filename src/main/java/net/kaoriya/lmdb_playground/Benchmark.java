@@ -104,12 +104,6 @@ public class Benchmark {
         return r;
     }
 
-    public Result runTest0(Params p) {
-        return runWithoutTx(p, "no-suffix, no-query for control", (i, k) -> {
-            return i < this.keyCount;
-        });
-    }
-
     public Result runTest1(Params p) {
         return runWithoutTx(p, "no-suffix, no-tx", (i, k) -> {
             Entry entry = LongestPrefixMatch.match(p.env, p.db, k);
@@ -120,20 +114,6 @@ public class Benchmark {
     public Result runTest2(Params p) {
         return runWithTx(p, "no-suffix, with-tx", (tx, k) -> {
             Entry entry = LongestPrefixMatch.match(tx, p.db, k);
-            return entry != null;
-        });
-    }
-
-    public Result runTest3(Params p) {
-        return runWithoutTx(p, "exact-match, no-tx", (i, k) -> {
-            Entry entry = LongestPrefixMatch.exactMatch(p.env, p.db, k);
-            return entry != null;
-        });
-    }
-
-    public Result runTest4(Params p) {
-        return runWithTx(p, "exact-match, with-tx", (tx, k) -> {
-            Entry entry = LongestPrefixMatch.exactMatch(tx, p.db, k);
             return entry != null;
         });
     }
@@ -163,13 +143,6 @@ public class Benchmark {
         });
     }
 
-    public Result runTest10(Params p) {
-        return runWithoutTx(p, "with-suffix, no-query for control", (i, k) -> {
-            k += this.suffixGen.generate();
-            return i < this.keyCount;
-        });
-    }
-
     public Result runTest11(Params p) {
         return runWithoutTx(p, "with-suffix, no-tx", (i, k) -> {
             k += this.suffixGen.generate();
@@ -190,19 +163,15 @@ public class Benchmark {
         runNewEnv(this.dir, false, (env, db) -> {
             Runner runner = new Runner(BENCHMARK_DURATION, env, db);
 
-            //runner.run(this::runTest0);
+            // no-suffix
             runner.run(this::runTest1);
             runner.run(this::runTest2);
 
-            // get-exact is not used. slow, redundant.
-            //runner.run(this::runTest3);
-            //runner.run(this::runTest4);
+            // with-suffix
+            runner.run(this::runTest11);
+            runner.run(this::runTest12);
 
-            // with-suffix commented, not now.
-            //runner.run(this::runTest10);
-            //runner.run(this::runTest11);
-            //runner.run(this::runTest12);
-
+            // get-exact (for control)
             runner.run(this::runTest20);
             runner.run(this::runTest21);
             // XXX: less-copy doesn't work on Windows.

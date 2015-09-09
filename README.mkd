@@ -5,92 +5,36 @@
 *   Github: https://github.com/deephacks/lmdbjni
 *   Javadoc: http://deephacks.org/lmdbjni/apidocs/index.html
 
-## Sample
+## Benchamrk
 
-```
-$ gradle run
-:compileJava UP-TO-DATE
-:processResources UP-TO-DATE
-:classes UP-TO-DATE
-:run
-seek2: prefix=bb
-  key=bba value=v:bba
-  key=bbb value=v:bbb
-  key=bbc value=v:bbc
+### How to run benchmark
 
-BUILD SUCCESSFUL
-
-Total time: 3.117 secs
-```
+    $ gradle run
 
 ### Benchmark results
 
-#### 2015/08/19 version
+#### 2015/09/09 version
 
 ```
 HitRate:0.10 KeyCount:100000 KeyLen:128 ValLen:128
-  no-suffix, no-query for control - QPS:36937802.28 HitRate:0.100
-  no-suffix, no-tx - QPS:5490.27 HitRate:0.100
-  no-suffix, with-tx - QPS:6074.55 HitRate:0.098
-  with-suffix, no-query for control - QPS:1841589.76 HitRate:0.100
-  with-suffix, no-tx - QPS:6241.40 HitRate:0.101
-  with-suffix, with-tx - QPS:6249.33 HitRate:0.098
+  no-suffix, no-tx - QPS:221559.29 HitRate:0.100
+  no-suffix, with-tx - QPS:250753.34 HitRate:0.100
+  with-suffix, no-tx - QPS:203924.75 HitRate:0.100
+  with-suffix, with-tx - QPS:246871.87 HitRate:0.100
+  get-exact, no-tx - QPS:734347.91 HitRate:0.100
+  get-exact, with-tx - QPS:930207.52 HitRate:0.100
 HitRate:0.50 KeyCount:100000 KeyLen:128 ValLen:128
-  no-suffix, no-query for control - QPS:36066703.13 HitRate:0.500
-  no-suffix, no-tx - QPS:11166.14 HitRate:0.500
-  no-suffix, with-tx - QPS:11521.69 HitRate:0.505
-  with-suffix, no-query for control - QPS:2005055.74 HitRate:0.500
-  with-suffix, no-tx - QPS:11040.14 HitRate:0.496
-  with-suffix, with-tx - QPS:11283.90 HitRate:0.500
+  no-suffix, no-tx - QPS:246747.14 HitRate:0.499
+  no-suffix, with-tx - QPS:283585.96 HitRate:0.501
+  with-suffix, no-tx - QPS:202871.14 HitRate:0.499
+  with-suffix, with-tx - QPS:222302.44 HitRate:0.500
+  get-exact, no-tx - QPS:785039.09 HitRate:0.500
+  get-exact, with-tx - QPS:960080.41 HitRate:0.500
 HitRate:0.90 KeyCount:100000 KeyLen:128 ValLen:128
-  no-suffix, no-query for control - QPS:37218255.57 HitRate:0.900
-  no-suffix, no-tx - QPS:49614.16 HitRate:0.899
-  no-suffix, with-tx - QPS:49523.24 HitRate:0.899
-  with-suffix, no-query for control - QPS:2058071.53 HitRate:0.900
-  with-suffix, no-tx - QPS:48916.96 HitRate:0.899
-  with-suffix, with-tx - QPS:50043.98 HitRate:0.900
-```
-
-#### 2015/08/26 version
-
-Comparing "longest prefix match" vs "exact match".
-
-```
-HitRate:0.10 KeyCount:100000 KeyLen:128 ValLen:128
-  no-suffix, no-tx - QPS:5136.12 HitRate:0.099
-  no-suffix, with-tx - QPS:5551.15 HitRate:0.104
-  get-exact, no-tx - QPS:729263.13 HitRate:0.100
-  get-exact, with-tx - QPS:903617.18 HitRate:0.100
-HitRate:0.50 KeyCount:100000 KeyLen:128 ValLen:128
-  no-suffix, no-tx - QPS:10454.62 HitRate:0.499
-  no-suffix, with-tx - QPS:10720.56 HitRate:0.503
-  get-exact, no-tx - QPS:753163.77 HitRate:0.500
-  get-exact, with-tx - QPS:961362.13 HitRate:0.500
-HitRate:0.90 KeyCount:100000 KeyLen:128 ValLen:128
-  no-suffix, no-tx - QPS:48440.95 HitRate:0.899
-  no-suffix, with-tx - QPS:47727.51 HitRate:0.900
-  get-exact, no-tx - QPS:782650.65 HitRate:0.900
-  get-exact, with-tx - QPS:973108.95 HitRate:0.900
-```
-
-#### 2015/09/02 version
-
-Using incremental search.
-
-```
-HitRate:0.10 KeyCount:100000 KeyLen:128 ValLen:128
-  no-suffix, no-tx - QPS:238917.40 HitRate:0.100
-  no-suffix, with-tx - QPS:263178.29 HitRate:0.100
-  get-exact, no-tx - QPS:764965.46 HitRate:0.100
-  get-exact, with-tx - QPS:953614.09 HitRate:0.100
-HitRate:0.50 KeyCount:100000 KeyLen:128 ValLen:128
-  no-suffix, no-tx - QPS:254731.83 HitRate:0.500
-  no-suffix, with-tx - QPS:287166.47 HitRate:0.500
-  get-exact, no-tx - QPS:757378.56 HitRate:0.500
-  get-exact, with-tx - QPS:998419.35 HitRate:0.500
-HitRate:0.90 KeyCount:100000 KeyLen:128 ValLen:128
-  no-suffix, no-tx - QPS:260261.17 HitRate:0.900
-  no-suffix, with-tx - QPS:290268.33 HitRate:0.900
-  get-exact, no-tx - QPS:731709.77 HitRate:0.900
-  get-exact, with-tx - QPS:989383.65 HitRate:0.900
+  no-suffix, no-tx - QPS:259878.37 HitRate:0.900
+  no-suffix, with-tx - QPS:250179.26 HitRate:0.900
+  with-suffix, no-tx - QPS:204256.73 HitRate:0.899
+  with-suffix, with-tx - QPS:218295.46 HitRate:0.900
+  get-exact, no-tx - QPS:756443.89 HitRate:0.900
+  get-exact, with-tx - QPS:965200.35 HitRate:0.900
 ```

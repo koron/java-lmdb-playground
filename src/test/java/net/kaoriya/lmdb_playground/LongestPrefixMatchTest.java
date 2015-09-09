@@ -77,19 +77,21 @@ public class LongestPrefixMatchTest {
             });
 
             assertMatch(env, db, "foo", "foo");
-            assertMatch(env, db, "foob", "foobar");
-            assertMatch(env, db, "fooba", "foobar");
+            assertMatch(env, db, "foob", "foo");
+            assertMatch(env, db, "fooba", "foo");
             assertMatch(env, db, "foobar", "foobar");
             assertMatch(env, db, "foobac", "foo");
 
-            assertMatch(env, db, "foobarb", "foobarbaz");
+            assertMatch(env, db, "foobarb", "foobar");
             assertMatch(env, db, "foobarc", "foobar");
 
             assertMatch(env, db, "fooc", "foo");
             assertMatch(env, db, "food", "foo");
-            assertMatch(env, db, "foof", "foofoo");
-            assertMatch(env, db, "foofo", "foofoo");
+            assertMatch(env, db, "foof", "foo");
+            assertMatch(env, db, "foofo", "foo");
             assertMatch(env, db, "foofoo", "foofoo");
+
+            assertMatch(env, db, "foofoofoo", "foofoo");
         });
 
     }

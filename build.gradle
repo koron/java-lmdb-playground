@@ -5,7 +5,7 @@ apply plugin: 'application'
 apply plugin: 'jacoco'
 
 version = '0.1'
-mainClassName = 'net.kaoriya.lmdb_playground.LongestPrefixMatch'
+mainClassName = 'net.kaoriya.lmdb_playground.Benchmark'
 
 repositories {
     mavenCentral()

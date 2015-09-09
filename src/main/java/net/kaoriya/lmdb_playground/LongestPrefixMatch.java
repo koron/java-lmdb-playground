@@ -2,6 +2,7 @@ package net.kaoriya.lmdb_playground;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
 
@@ -21,70 +22,46 @@ import static net.kaoriya.lmdb_playground.LMDBUtils.*;
 
 public class LongestPrefixMatch {
 
-    public static void main(String[] args) {
-        lpm01();
-    }
-
-    static void lpm01() {
-        runNewEnv("tmp/lpm01", true, (env, db) -> {
-            putKeys(db, new String[]{
-                "aa", "ab", "abc",
-                "ba", "bb", "bc",
-                "ca", "cbd", "cc",
-            });
-
-            // FOUND: prefix=abc key=abc
-            // FOUND: prefix=bbc key=bb
-            // FOUND: prefix=cbc key=cbd
-            test(env, db, "abc");
-            test(env, db, "bbc");
-            test(env, db, "cbc");
-        });
-    }
-
-    static void test(Env env, Database db, String s) {
-        Entry e = match(env, db, s);
-        if (e != null) {
-            System.out.printf("FOUND: prefix=%s key=%s", s,
-                    string(e.getKey()));
-            System.out.println();
-        } else {
-            System.out.printf("NOT_FOUND: prefix=%s", s);
+    public static Entry match(Env env, Database db, String s) {
+        Transaction tx = env.createReadTransaction();
+        try {
+            return match(tx, db, s);
+        } finally {
+            tx.reset();
+            tx.close();
         }
     }
 
-    public static Entry match(Env env, Database db, String s) {
-        Transaction tx = env.createTransaction(true);
+    public static Entry match(Transaction tx, Database db, String s) {
+        if (s == null || s.length() == 0) {
+            return null;
+        }
         try (Cursor c = db.openCursor(tx)) {
-            Entry e = c.seek(SeekOp.RANGE, bytes(s));
-            if (e == null || hasKeyPrefix(e, s)) {
-                return e;
-            }
-            // scan the key which is prefix of query string.
-            boolean subMatch = countPrefixMatch(string(e.getKey()), s) > 0;
-            while (true) {
-                e = c.get(GetOp.PREV);
+            Entry found = null;
+            for (int i = 1, l = s.length(); i <= l; ++i) {
+                byte[] queryBytes = bytes(s.substring(0, i));
+                Entry e = c.seek(SeekOp.RANGE, queryBytes);
                 if (e == null) {
                     break;
                 }
-                String k = string(e.getKey());
-                if (s.startsWith(k)) {
-                    return e;
+                byte[] keyBytes = e.getKey();
+                if (Arrays.equals(queryBytes, keyBytes)) {
+                    found = e;
+                    continue;
                 }
-                boolean newSubMatch = countPrefixMatch(k, s) > 0;
-                if (!newSubMatch && subMatch) {
-                    return null;
+                String keyString = string(e.getKey());
+                int n = countPrefixMatch(s, keyString);
+                if (n < i) {
+                    break;
+                } else if (n > i) {
+                    i = n;
+                    if (n == keyString.length()) {
+                        found = e;
+                    }
                 }
-                subMatch |= newSubMatch;
             }
-            return null;
-        } finally {
-            tx.reset();
+            return found;
         }
-    }
-
-    static boolean hasKeyPrefix(Entry e, String prefix) {
-        return string(e.getKey()).startsWith(prefix);
     }
 
     static int countPrefixMatch(String s, String t) {

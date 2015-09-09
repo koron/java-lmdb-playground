@@ -125,4 +125,10 @@ public class LongestPrefixMatchTest {
             assertMatch(env, db, "ABZ", "A");
         });
     }
+
+    private static void putKeys(Database db, String[] keys) {
+        for (String key : keys) {
+            LMDBUtils.put(db, key, "auto_value:" + key);
+        }
+    }
 }

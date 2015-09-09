@@ -4,36 +4,41 @@ import java.io.File;
 import java.io.IOException;
 import java.util.function.BiConsumer;
 
-import org.apache.commons.io.FileUtils;
-
 import org.fusesource.lmdbjni.Database;
 import org.fusesource.lmdbjni.Env;
 
 import static org.fusesource.lmdbjni.Constants.bytes;
-import static org.fusesource.lmdbjni.Constants.string;
 
 public class LMDBUtils {
 
     public static void runNewEnv (
-            String path,
+            String dirPath,
+            boolean clean,
+            BiConsumer<Env, Database> proc)
+    {
+        runNewEnv(new File(dirPath), clean, proc);
+    }
+
+    public static void runNewEnv (
+            File dir,
             boolean clean,
             BiConsumer<Env, Database> proc)
     {
         try (
-            Env env = LMDBUtils.newEnv(path, clean);
+            Env env = LMDBUtils.newEnv(dir, clean);
             Database db = env.openDatabase();
         ) {
             proc.accept(env, db);
         }
     }
 
-    public static Env newEnv(String path, boolean clear) {
-        File dir = new File(path);
+    public static Env newEnv(String dirPath, boolean clear) {
+        return newEnv(new File(dirPath), clear);
+    }
+
+    public static Env newEnv(File dir, boolean clear) {
         if (clear) {
-            try {
-                FileUtils.deleteDirectory(dir);
-            } catch (IOException e) {
-            }
+            deleteRecursively(dir);
         }
         if (!dir.exists()) {
             dir.mkdirs();
@@ -51,9 +56,16 @@ public class LMDBUtils {
         }
     }
 
-    public static void putKeys(Database db, String[] keys) {
-        for (String key : keys) {
-            put(db, key, "auto_value:" + key);
+    private static void deleteRecursively(File file) {
+        if (!file.exists()) {
+            return;
+        } else if (file.isFile()) {
+            file.delete();
+        } else if (file.isDirectory()) {
+            for (File child : file.listFiles()) {
+                deleteRecursively(child);
+            }
+            file.delete();
         }
     }
 }

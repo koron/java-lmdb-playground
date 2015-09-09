@@ -21,7 +21,6 @@ dependencies {
     compile fileTree(dir: 'lib', include: 'lmdbjni-*.jar')
 
     compile "org.fusesource.hawtjni:hawtjni-runtime:1.9"
-    compile "commons-io:commons-io:2.4"
 
     testCompile 'junit:junit:4.11'
 }

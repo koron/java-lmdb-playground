@@ -1,5 +1,7 @@
 # Lmdb playground
 
+Test implementation of **longest prefix match** using lmdbjni.
+
 ## lmdb JNI
 
 *   Github: https://github.com/deephacks/lmdbjni
@@ -38,3 +40,34 @@ HitRate:0.90 KeyCount:100000 KeyLen:128 ValLen:128
   get-exact, no-tx - QPS:756443.89 HitRate:0.900
   get-exact, with-tx - QPS:965200.35 HitRate:0.900
 ```
+
+
+## How to use `LongestPrefixMatch`
+
+Copy one or two `*.java` files to your project:
+
+*   [LongestPrefixMatch.java](https://raw.githubusercontent.com/koron/java-lmdb-playground/master/src/main/java/net/kaoriya/lmdb_playground/LongestPrefixMatch.java)
+*   (OPTION) [LMDBUtils.java](https://raw.githubusercontent.com/koron/java-lmdb-playground/master/src/main/java/net/kaoriya/lmdb_playground/LMDBUtils.java)
+
+(OPTION) Copy [`*.jar` files](https://github.com/koron/java-lmdb-playground/tree/master/lib) to your project.
+
+Then you can use `LongestPrefixMatch#match` for the purpose.
+
+```java
+LongestPrefixMatch.match(env, db, "foobar");
+```
+
+To obtain `env` and `db` easily, you could use `LMDBUtils#runNewEnv` too.
+Please check below example:
+
+```java
+LMDBUtils.runNewEnv("/var/db/my_prefix_data", false, (env, db) -> {
+  LongestPrefixMatch.match(env, db, "foobar");
+});
+```
+
+
+## License
+
+This project and its all contents are distributed under Apache License 2.0
+See LICENSE for details.

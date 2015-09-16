@@ -21,6 +21,10 @@ public class LongestPrefixMatch {
      * Perform longest prefix match.
      *
      * Make a match with implicit temporal transaction.
+     *
+     * @param env instance of Env
+     * @param db instance of Database
+     * @param s query string
      */
     public static Entry match(Env env, Database db, String s) {
         try (Transaction tx = env.createReadTransaction()) {
@@ -32,6 +36,10 @@ public class LongestPrefixMatch {
      * Perform longest prefix match with a transaction.
      *
      * Explicit trancation version for speed.
+     *
+     * @param tx instance of Transaction
+     * @param db instance of Database
+     * @param s query string
      */
     public static Entry match(Transaction tx, Database db, String s) {
         if (s == null || s.length() == 0) {

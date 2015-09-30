@@ -42,6 +42,10 @@ public class LongestPrefixMatch {
      * @param s query string
      */
     public static Entry match(Transaction tx, Database db, String s) {
+        return match1(tx, db, s);
+    }
+
+    public static Entry match1(Transaction tx, Database db, String s) {
         if (s == null || s.length() == 0) {
             return null;
         }
@@ -53,16 +57,18 @@ public class LongestPrefixMatch {
                 if (e == null) {
                     break;
                 }
+                /*
                 byte[] keyBytes = e.getKey();
                 if (Arrays.equals(queryBytes, keyBytes)) {
                     found = e;
                     continue;
                 }
+                */
                 String keyString = string(e.getKey());
                 int n = countPrefixMatch(s, keyString);
                 if (n < i) {
                     break;
-                } else if (n > i) {
+                } else if (n >= i) {
                     i = n;
                     if (n == keyString.length()) {
                         found = e;
@@ -78,6 +84,51 @@ public class LongestPrefixMatch {
         int i;
         for (i = 0; i < max; ++i) {
             if (s.charAt(i) != t.charAt(i)) {
+                break;
+            }
+        }
+        return i;
+    }
+
+    public static Entry match2(Transaction tx, Database db, String s) {
+        if (s == null || s.length() == 0) {
+            return null;
+        }
+        byte[] targetBytes = bytes(s);
+        try (Cursor c = db.openCursor(tx)) {
+            Entry found = null;
+            for (int i = 1, l = targetBytes.length; i <= l; ++i) {
+                byte[] queryBytes = Arrays.copyOf(targetBytes, i);
+                Entry e = c.seek(SeekOp.RANGE, queryBytes);
+                if (e == null) {
+                    break;
+                }
+                /*
+                byte[] keyBytes = e.getKey();
+                if (Arrays.equals(queryBytes, keyBytes)) {
+                    found = e;
+                    continue;
+                }
+                */
+                int n = countPrefixMatch(targetBytes, keyBytes);
+                if (n < i) {
+                    break;
+                } else if (n >= i) {
+                    i = n;
+                    if (n == keyBytes.length) {
+                        found = e;
+                    }
+                }
+            }
+            return found;
+        }
+    }
+
+    static int countPrefixMatch(byte[] s, byte[] t) {
+        int max = Math.min(s.length, t.length);
+        int i;
+        for (i = 0; i < max; ++i) {
+            if (s[i] != t[i]) {
                 break;
             }
         }

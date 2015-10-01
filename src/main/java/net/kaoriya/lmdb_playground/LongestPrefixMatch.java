@@ -45,26 +45,22 @@ public class LongestPrefixMatch {
         if (s == null || s.length() == 0) {
             return null;
         }
+        byte[] targetBytes = bytes(s);
         try (Cursor c = db.openCursor(tx)) {
             Entry found = null;
-            for (int i = 1, l = s.length(); i <= l; ++i) {
-                byte[] queryBytes = bytes(s.substring(0, i));
+            for (int i = 1, l = targetBytes.length; i <= l; ++i) {
+                byte[] queryBytes = Arrays.copyOf(targetBytes, i);
                 Entry e = c.seek(SeekOp.RANGE, queryBytes);
                 if (e == null) {
                     break;
                 }
                 byte[] keyBytes = e.getKey();
-                if (Arrays.equals(queryBytes, keyBytes)) {
-                    found = e;
-                    continue;
-                }
-                String keyString = string(e.getKey());
-                int n = countPrefixMatch(s, keyString);
+                int n = countPrefixMatch(targetBytes, keyBytes);
                 if (n < i) {
                     break;
-                } else if (n > i) {
+                } else if (n >= i) {
                     i = n;
-                    if (n == keyString.length()) {
+                    if (n == keyBytes.length) {
                         found = e;
                     }
                 }
@@ -73,11 +69,11 @@ public class LongestPrefixMatch {
         }
     }
 
-    static int countPrefixMatch(String s, String t) {
-        int max = Math.min(s.length(), t.length());
+    static int countPrefixMatch(byte[] s, byte[] t) {
+        int max = Math.min(s.length, t.length);
         int i;
         for (i = 0; i < max; ++i) {
-            if (s.charAt(i) != t.charAt(i)) {
+            if (s[i] != t[i]) {
                 break;
             }
         }

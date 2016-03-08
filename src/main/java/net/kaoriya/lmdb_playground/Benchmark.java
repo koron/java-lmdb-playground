@@ -49,7 +49,7 @@ public class Benchmark {
 
         runNewEnv(this.dir, true, (env, db) -> {
             env.setMapSize(536870912); // 512MB
-            try (Transaction tx = env.createTransaction(false)) {
+            try (Transaction tx = env.createWriteTransaction()) {
                 for (int i = 0; i < this.keyCount; ++i) {
                     String k = keyGen.generate();
                     String v = valGen.generate();

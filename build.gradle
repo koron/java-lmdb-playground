@@ -34,6 +34,10 @@ run {
     }
 }
 
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:deprecation"
+}
+
 ////////////////////////////////////////////////////////////////////////////
 // for https://coveralls.io/
 

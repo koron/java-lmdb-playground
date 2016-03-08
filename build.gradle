@@ -12,13 +12,13 @@ repositories {
 }
 
 dependencies {
-    //def lmdbjni_version = '0.3.2'
-    //compile "org.deephacks.lmdbjni:lmdbjni:$lmdbjni_version"
-    //compile "org.deephacks.lmdbjni:lmdbjni-win64:$lmdbjni_version"
-    //compile "org.deephacks.lmdbjni:lmdbjni-linux64:$lmdbjni_version"
-    //compile "org.deephacks.lmdbjni:lmdbjni-osx64:$lmdbjni_version"
+    def lmdbjni_version = '0.4.6'
+    compile "org.deephacks.lmdbjni:lmdbjni:$lmdbjni_version"
+    compile "org.deephacks.lmdbjni:lmdbjni-win64:$lmdbjni_version"
+    compile "org.deephacks.lmdbjni:lmdbjni-linux64:$lmdbjni_version"
+    compile "org.deephacks.lmdbjni:lmdbjni-osx64:$lmdbjni_version"
 
-    compile fileTree(dir: 'lib', include: 'lmdbjni-*.jar')
+    //compile fileTree(dir: 'lib', include: 'lmdbjni-*.jar')
 
     compile "org.fusesource.hawtjni:hawtjni-runtime:1.9"
 

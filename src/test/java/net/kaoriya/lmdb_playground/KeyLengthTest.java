@@ -12,7 +12,7 @@ public class KeyLengthTest {
   @Test
   public void testMaxKeySize() throws Exception {
     runNewEnv("tmp/test/KeyLength-testMaxKeySize", true, (env, db) -> {
-        assertEquals(1023L, env.getMaxKeySize());
+        assertEquals(511L, env.getMaxKeySize());
     });
   }
 

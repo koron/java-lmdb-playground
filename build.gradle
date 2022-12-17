@@ -1,8 +1,9 @@
 // vim:set sts=4 sw=4 tw=0 et ft=groovy:
 
-apply plugin: 'java'
-apply plugin: 'application'
-apply plugin: 'jacoco'
+plugins {
+    id 'java'
+    id 'application'
+}
 
 version = '0.1'
 mainClassName = 'net.kaoriya.lmdb_playground.Benchmark'
@@ -13,16 +14,16 @@ repositories {
 
 dependencies {
     def lmdbjni_version = '0.4.6'
-    compile "org.deephacks.lmdbjni:lmdbjni:$lmdbjni_version"
-    compile "org.deephacks.lmdbjni:lmdbjni-win64:$lmdbjni_version"
-    compile "org.deephacks.lmdbjni:lmdbjni-linux64:$lmdbjni_version"
-    compile "org.deephacks.lmdbjni:lmdbjni-osx64:$lmdbjni_version"
+    implementation "org.deephacks.lmdbjni:lmdbjni:$lmdbjni_version"
+    implementation "org.deephacks.lmdbjni:lmdbjni-win64:$lmdbjni_version"
+    implementation "org.deephacks.lmdbjni:lmdbjni-linux64:$lmdbjni_version"
+    implementation "org.deephacks.lmdbjni:lmdbjni-osx64:$lmdbjni_version"
 
-    //compile fileTree(dir: 'lib', include: 'lmdbjni-*.jar')
+    //implementation fileTree(dir: 'lib', include: 'lmdbjni-*.jar')
 
-    compile "org.fusesource.hawtjni:hawtjni-runtime:1.9"
+    implementation "org.fusesource.hawtjni:hawtjni-runtime:1.9"
 
-    testCompile 'junit:junit:4.11'
+    testImplementation 'junit:junit:4.11'
 }
 
 run {
@@ -36,39 +37,4 @@ run {
 
 tasks.withType(JavaCompile) {
     options.compilerArgs << "-Xlint:deprecation"
-}
-
-////////////////////////////////////////////////////////////////////////////
-// for https://coveralls.io/
-
-apply plugin: 'net.saliman.cobertura'
-apply plugin: 'com.github.kt3k.coveralls'
-
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'net.saliman:gradle-cobertura-plugin:2.2.6'
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.1.0'
-    }
-}
-
-configurations.all {
-    resolutionStrategy {
-        // Cobertura includes an ASM version that can't handle Java 8,
-        // ASM 5.0.3 handles Java8
-        force 'org.ow2.asm:asm:5.0.4'
-        forcedModules = [ 'org.ow2.asm:asm:5.0.4' ]
-    }
-}
-
-cobertura.coverageFormats = ['html', 'xml']
-
-////////////////////////////////////////////////////////////////////////////
-// gradle wrapper task
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
 }

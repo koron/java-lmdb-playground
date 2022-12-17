@@ -13,11 +13,10 @@ repositories {
 }
 
 dependencies {
-    def lmdbjni_version = '0.4.6'
-    implementation "org.deephacks.lmdbjni:lmdbjni:$lmdbjni_version"
-    implementation "org.deephacks.lmdbjni:lmdbjni-win64:$lmdbjni_version"
-    implementation "org.deephacks.lmdbjni:lmdbjni-linux64:$lmdbjni_version"
-    implementation "org.deephacks.lmdbjni:lmdbjni-osx64:$lmdbjni_version"
+    implementation "org.deephacks.lmdbjni:lmdbjni:0.4.7"
+    implementation "org.deephacks.lmdbjni:lmdbjni-linux64:0.4.7"
+    implementation "org.deephacks.lmdbjni:lmdbjni-osx64:0.4.6"
+    implementation "org.deephacks.lmdbjni:lmdbjni-win64:0.4.6"
 
     //implementation fileTree(dir: 'lib', include: 'lmdbjni-*.jar')
 

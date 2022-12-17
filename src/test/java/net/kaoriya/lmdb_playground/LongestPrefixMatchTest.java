@@ -9,7 +9,7 @@ import org.fusesource.lmdbjni.Env;
 import static org.fusesource.lmdbjni.Constants.string;
 
 import static net.kaoriya.lmdb_playground.LongestPrefixMatch.match;
-import static net.kaoriya.lmdb_playground.LMDBUtils.*;
+import static net.kaoriya.lmdb_playground.LMDBUtils.runNewEnv;
 
 public class LongestPrefixMatchTest {
 

@@ -18,7 +18,7 @@ dependencies {
     implementation "org.deephacks.lmdbjni:lmdbjni-osx64:0.4.6"
     implementation "org.deephacks.lmdbjni:lmdbjni-win64:0.4.6"
 
-    //implementation fileTree(dir: 'lib', include: 'lmdbjni-*.jar')
+    implementation fileTree(dir: 'lib', include: 'lmdbjni-native-*.jar')
 
     implementation "org.lmdbjava:lmdbjava:0.8.2"
     implementation fileTree(dir: 'lib', include: 'lmdbjava-native-*.jar')

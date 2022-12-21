@@ -11,7 +11,7 @@ import org.fusesource.lmdbjni.Env;
 import org.fusesource.lmdbjni.Transaction;
 
 import static net.kaoriya.lmdb_playground.LongestPrefixMatch.match;
-import static net.kaoriya.lmdb_playground.LMDBUtils.*;
+import static net.kaoriya.lmdb_playground.LMDBUtils.runNewEnv;
 import static org.fusesource.lmdbjni.Constants.bytes;
 import static org.fusesource.lmdbjni.Constants.string;
 
